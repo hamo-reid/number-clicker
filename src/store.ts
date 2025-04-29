@@ -68,7 +68,10 @@ export const useGameStore = defineStore("game", {
       if (this.gameMatrix[row][col] === this.nextNumber) {
         this.nextNumber++;
         if (this.nextNumber > 100) {
-          this.endGame();
+          if (!this.isEnd) {
+            this.endGame();
+            return true;
+          } else return false;
         }
         return true;
       }

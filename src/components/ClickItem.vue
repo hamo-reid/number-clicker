@@ -21,7 +21,7 @@ watch(() => gameStore.isReady, () => {
 });
 
 function handleClick() {
-  if (gameStore.isReady) {
+  if (gameStore.isReady && !isSuccess.value) {
     isSuccess.value = gameStore.checkClick(props.x, props.y);
   }
 }
