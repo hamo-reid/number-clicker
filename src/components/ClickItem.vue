@@ -1,30 +1,28 @@
 <template>
   <div class="click-item" :class="{'success': isSuccess}" @click="handleClick">
-    {{ isReady ? randomMatrix![x][y] : ""  }}
+    <span
+      v-show="!isSuccess"
+      >{{ gameStore.isReady ? gameStore.gameMatrix![x][y] : ""  }}</span
+    >
   </div>
 </template>
 <script setup lang="ts">
-import { inject, ref } from 'vue';
-import type { Ref } from 'vue';
+import { ref, watch } from "vue";
+import { useGameStore } from "../store";
+
+const gameStore = useGameStore();
 const props = defineProps<{
-  x: number,
-  y: number,
+  x: number;
+  y: number;
 }>();
-const emit = defineEmits<{
-  (e: 'itemClick', result: boolean): void
-}>()
-const randomMatrix = inject<Ref<number[][]>>('randomMatrix')
-const currentNumber = inject<Ref<number>>('currentNumber')
-const isReady = inject<Ref<boolean>>('isReady')
-const isSuccess = ref(false)
+const isSuccess = ref(false);
+watch(() => gameStore.isReady, () => {
+  isSuccess.value = false;
+});
 
 function handleClick() {
-  // 判断当前的数字的下一个数字是否和当前点击的数字相同，相同则点击成功，否则失败
-  if (randomMatrix?.value[props.x][props.y] === currentNumber!.value + 1) {
-    isSuccess.value = true
-    emit('itemClick', true)
-  } else {
-    emit('itemClick', false)
+  if (gameStore.isReady) {
+    isSuccess.value = gameStore.checkClick(props.x, props.y);
   }
 }
 </script>
@@ -33,14 +31,22 @@ function handleClick() {
 .click-item {
   width: 50px;
   height: 50px;
-  border: 1px solid black;
+  border: 1px solid #8CD790;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: white;
+  cursor: pointer;
+}
+.click-item span {
+  font-size: 20px;
+}
+.click-item:not(.success):hover {
+  font-weight: 600;
+  border: 2px solid #285943;
 }
 .click-item.success {
-  background-color: green;
+  background-color: #8CD790;
   color: white;
 }
 </style>
